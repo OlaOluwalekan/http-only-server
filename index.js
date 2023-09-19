@@ -7,7 +7,7 @@ app.use(cookieParser())
 app.use(
   cors({
     credentials: true,
-    origin: ['http://localhost:5173', 'https://http-cookies.netlify.app/'],
+    origin: ['http://localhost:5173', 'https://http-cookies.netlify.app'],
   })
 )
 
@@ -20,8 +20,10 @@ app.get('/', (req, res) => {
     .status(202)
     .cookie('name', 'John Doe', {
       path: '/',
-      expires: new Date(new Date().getTime() + 10000),
+      expires: new Date(new Date().getTime() + 86400000),
       httpOnly: true,
+      sameSite: 'none',
+      secure: true,
     })
     .send('cookie sent')
 })
@@ -29,6 +31,10 @@ app.get('/', (req, res) => {
 app.get('/api/v1/user', (req, res) => {
   console.log('sending')
   res.status(201).json({ user: 'ola' })
+})
+
+app.get('/delete', (req, res) => {
+  res.status(202).clearCookie('name').send('deleted')
 })
 
 app.listen('9000', console.log(`server is listening on port 9000...`))
