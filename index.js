@@ -13,12 +13,17 @@ app.use(
 
 app.use(express.json())
 
+const name = 'Mike David'
+
 app.get('/', (req, res) => {
-  // console.log('sending')
-  // res.status(201).json({ user: 'ola' })
+  console.log('sending')
+  res.status(201).json({ user: 'ola' })
+})
+
+app.get('/create/:id', (req, res) => {
   res
     .status(202)
-    .cookie('name', 'John Doe', {
+    .cookie('name', req.params.id, {
       path: '/',
       expires: new Date(new Date().getTime() + 86400000),
       httpOnly: true,
@@ -28,13 +33,28 @@ app.get('/', (req, res) => {
     .send('cookie sent')
 })
 
-app.get('/api/v1/user', (req, res) => {
-  console.log('sending')
-  res.status(201).json({ user: 'ola' })
-})
-
 app.get('/delete', (req, res) => {
   res.status(202).clearCookie('name').send('deleted')
 })
+
+app.get(
+  '/post',
+  (req, res, next) => {
+    const token = req.cookies.name
+    if (!token) {
+      return res.status(401).json({ err: 'no token' })
+    }
+
+    if (token !== name) {
+      return res.status(401).json({ err: 'invalid token' })
+    }
+    // console.log(token)
+    req.name = token
+    next()
+  },
+  (req, res) => {
+    res.status(200).json({ name: req.name, age: 24, position: 'developer' })
+  }
+)
 
 app.listen('9000', console.log(`server is listening on port 9000...`))
