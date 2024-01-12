@@ -45,9 +45,9 @@ app.get(
       return res.status(401).json({ err: 'no token' })
     }
 
-    if (token !== name) {
-      return res.status(401).json({ err: 'invalid token' })
-    }
+    // if (token !== name) {
+    //   return res.status(401).json({ err: 'invalid token' })
+    // }
     // console.log(token)
     req.name = token
     next()
